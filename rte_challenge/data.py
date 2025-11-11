@@ -49,7 +49,7 @@ def extract_features(obs: BaseObservation) -> pl.DataFrame:
         if arr is None: return
         arr = np.asarray(arr).astype(float).ravel()
         parts.append(arr)
-        names.extend([f"{prefix}_{i}" for i in range(arr.size)])
+        names.extend([f"{prefix}_{i}" for i in range(arr.size)]) # on ajoute les noms des features
     append(getattr(obs, "gen_p", None), "gen_p")
     append(getattr(obs, "gen_q", None), "gen_q")
     append(getattr(obs, "load_p", None), "load_p")
@@ -114,7 +114,7 @@ def create_training_data(
     df_targets.columns = [f"rho_{i}" for i in range(df_targets.width)]
     return df_features, df_targets
 
-# ----- convenience: generate + cache + (optionally) write main.py-style files -
+# ----- convenience: generate + cache s -
 
 def generate_and_cache(
     cache_dir: str = "data/cache",
@@ -122,8 +122,6 @@ def generate_and_cache(
     n_actions: int = 20,
     force: bool = False,
     grid_case: str = "l2rpn_case14_sandbox",
-    write_main_style_files: bool = False,
-    out_dir: str = ".",
 ) -> tuple[pl.DataFrame, pl.DataFrame]:
     """High-level entrypoint with caching. Optionally writes df_features.parquet / df_targets.parquet
     to mimic the original main.py behavior.
@@ -155,9 +153,5 @@ def generate_and_cache(
             json.dump([{"index": i, "repr": str(a)} for i, a in enumerate(all_actions)],
                       f, indent=2, ensure_ascii=False)
 
-    if write_main_style_files:
-        out = Path(out_dir); out.mkdir(parents=True, exist_ok=True)
-        df_targets.write_parquet(out / "df_targets.parquet")
-        df_features.write_parquet(out / "df_features.parquet")
 
     return df_features, df_targets
