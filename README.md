@@ -1,6 +1,7 @@
 # POC - Power grid action predictior
 Florian Larab - 2025
 
+<<<<<<< HEAD
 Ce projet met en place un workflow de bout en bout autour de Grid2Op pour prédire les conséquences d’actions sur le réseau (max rho post-action). Le but est de montrer une approche simple, structurée et testable : génération des données + cache, entraînement de modèles classiques, visualisation, notebook d’exploration et tests unitaires.
 
 Certains commentaires sont en français, d'autres en anglais. Il faut être bilingual (at least) pour être un bon ingénieur.
@@ -147,3 +148,5 @@ Exemples de visualisations supplémentaires inclus : distributions, profils d’
 **Important :** certaines versions de Polars inversent (colonnes vs lignes) si l’orientation n’est pas précisée. Le code **force `orient="row"`** lors de la création de Y, et le script d’entraînement **vérifie et transpose** si un ancien cache inversé est détecté. Normalement, j'ai forcé la bonne version de polars dans le requirements, mais on ne sait jamais : mieux vaut crééer un environnement local tel que je le décris plus haut, avec les requirements que je donne. J'ai été bloqué par cette erreur pendant quelques temps,donc j'ai inclus de quoi la parer dans les scripts et dans les tests.
 
 
+=======
+>>>>>>> 12f96ea7936b868a947c79bc3e92653f79b679c1
