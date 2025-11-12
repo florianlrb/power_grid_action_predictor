@@ -41,9 +41,9 @@ if __name__ == "__main__":
     X = pl.read_parquet(fX)
     Y = pl.read_parquet(fY)
 
-    # Auto-fix si Y a été transposé par un vieux cache
+    # Auto-fix si Y a été transposé par un vieux cache ou par une maivaise version de polars
     if X.height != Y.height and Y.width == X.height:
-        print(" Y semble transposé; correction automatique (transpose).")
+        print(" !! Y semble transpose; correction automatique (transpose).")
         Y = Y.transpose()
         # renommer colonnes proprement
         Y.columns = [f"rho_{i}" for i in range(Y.width)]
@@ -61,18 +61,18 @@ if __name__ == "__main__":
             # tri par RMSE croissante
             results = sorted(results, key=lambda d: d["rmse_mean"])
             for r in results:
-                print(f"- {r['model']:>5s}: RMSE={r['rmse_mean']:.4f}±{r['rmse_std']:.4f} | "
-                      f"Top1={r['top1_mean']:.3f}±{r['top1_std']:.3f}")
+                print(f"- {r['model']:>5s}: RMSE={r['rmse_mean']:.4f}+/-{r['rmse_std']:.4f} | "
+                      f"Top1={r['top1_mean']:.3f}+/-{r['top1_std']:.3f}")
             # on prend le meilleur pour l'entraînement final
             best_model = results[0]["model"]
-            print(f"\n→ Meilleur modèle (RMSE): {best_model}")
+            print(f"\n-> Meilleur modèle (RMSE): {best_model}")
             chosen = best_model
         else:
             # single model CV
             m = model_names[0]
             r = cross_validate(X, Y, m, cv=args.cv, random_state=args.random_state)
             print(f"\n== Cross-validation (cv={args.cv}) — {m} ==")
-            print(f"RMSE={r['rmse_mean']:.4f}±{r['rmse_std']:.4f} | Top1={r['top1_mean']:.3f}±{r['top1_std']:.3f}")
+            print(f"RMSE={r['rmse_mean']:.4f}+/-{r['rmse_std']:.4f} | Top1={r['top1_mean']:.3f}+/-{r['top1_std']:.3f}")
             chosen = m
     else:
         chosen = model_names[0]

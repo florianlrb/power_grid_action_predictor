@@ -13,7 +13,7 @@ from grid2op.Observation import BaseObservation
 from grid2op.Action import BaseAction
 from grid2op.Environment import Environment
 
-# Optional LightSim (subject's requirements); fallback to default backend if missing
+# test to know if lightsim is available
 try:
     from lightsim2grid import LightSimBackend
     _HAVE_LIGHTSIM = True
@@ -92,7 +92,7 @@ def create_training_data(
     list_obs: list[BaseObservation],
     all_actions: list[BaseAction],
 ) -> tuple[pl.DataFrame, pl.DataFrame]:
-    """Return (df_features, df_targets) as Polars DataFrames, in the spirit of main.py.
+    """Return (df_features, df_targets) as Polars DataFrames
     df_targets[i, j] = max(rho) after applying action j to observation i (inf if not converged).
     """
     X_rows = []
@@ -111,10 +111,10 @@ def create_training_data(
         X_rows.append(extract_features(obs))
     df_features = pl.concat(X_rows) if X_rows else pl.DataFrame()
     df_targets = pl.DataFrame(Y_rows, orient="row")
-    df_targets.columns = [f"rho_{i}" for i in range(df_targets.width)]
+    df_targets.columns = [f"rho_{i}" for i in range(df_targets.width)] #we predict the max(rho) if i understood correctly 
     return df_features, df_targets
 
-# ----- convenience: generate + cache s -
+# ----- : generate + cache data (and load it if already cached) -
 
 def generate_and_cache(
     cache_dir: str = "data/cache",
@@ -123,14 +123,13 @@ def generate_and_cache(
     force: bool = False,
     grid_case: str = "l2rpn_case14_sandbox",
 ) -> tuple[pl.DataFrame, pl.DataFrame]:
-    """High-level entrypoint with caching. Optionally writes df_features.parquet / df_targets.parquet
-    to mimic the original main.py behavior.
+    """High-level entrypoint with caching.
     """
     cache_dir_p = Path(cache_dir)
     key = _key_from_params(case=grid_case, episodes=episode_count, n_actions=n_actions)
     fX, fY, fA = _cached_paths(cache_dir_p, key)
 
-    if (fX.exists() and fY.exists()) and not force:
+    if (fX.exists() and fY.exists()) and not force: #tests if there is cached data and loads it if force mode is not selected
         df_features = pl.read_parquet(fX)
         df_targets = pl.read_parquet(fY)
         print("Using cached data. You can use --force to force regeneration of data.")

@@ -33,7 +33,7 @@ def _top1_acc(y_true: np.ndarray, y_pred: np.ndarray) -> float:
 # ---------- modèles ----------
 
 def _wrap_multioutput(base):
-    # Par sécurité, on wrappe tout : ça fonctionne pour Ridge/GBR, et ça reste ok pour DT/RF.
+    # Par sécurité, on wrappe tout .
     return MultiOutputRegressor(base)
 
 def get_estimator(name: str, random_state: int = 0, **kw):
