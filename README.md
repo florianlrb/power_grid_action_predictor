@@ -144,6 +144,35 @@ Exemples de visualisations supplémentaires inclus : distributions, profils d’
   - Chaque colonne correspond à une **action candidate** (actions aléatoires + **do‑nothing**).  
   - Colnames typiques (min du rho) : `rho_0`, `rho_1`, … .
 
+## Tets unitaires (pytest)
+Les tests exécutent les scripts (pas juste des fonctions internes), avec un cache minimal pour rester rapides.
+```bash
+pytest -q
+```
+ - tests/conftest.py
+
+    - fast_cache : génère un cache temporaire (1 épisode, 2 actions) dans tmp
+
+    - expose project_root et pyexe (interpréteur courant)
+
+- tests/test_generate_data.py
+
+    - charge la paire correspondante features_<key>.parquet / targets_<key>.parquet
+
+    - vérifie formes (X.height == Y.height, Y.width >= 2)
+
+- tests/test_train_model.py
+
+    - lance train_model.py (avec --cv 3 et un set de modèles)
+
+    - vérifie présence des artefacts et compatibilité des shapes
+
+- tests/test_visualize.py
+
+    - entraîne rapidement pour être sûr(e) d'avoir des données, lance visualize.py, vérifie que les figures existent
+
+Windows : tous les prints des scripts sont ASCII pour éviter les UnicodeEncodeError. On doit pouvoir ajouter utf-8 dans l'env pour éviter ça,mais faute de temps.
+
 **Important :** certaines versions de Polars inversent (colonnes vs lignes) si l’orientation n’est pas précisée. Le code **force `orient="row"`** lors de la création de Y, et le script d’entraînement **vérifie et transpose** si un ancien cache inversé est détecté. Normalement, j'ai forcé la bonne version de polars dans le requirements, mais on ne sait jamais : mieux vaut crééer un environnement local tel que je le décris plus haut, avec les requirements que je donne. J'ai été bloqué par cette erreur pendant quelques temps,donc j'ai inclus de quoi la parer dans les scripts et dans les tests.
 
 
